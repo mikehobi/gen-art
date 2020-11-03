@@ -69,19 +69,28 @@ const sketch = () => {
     // setSeed(SEED.HORSE);
     // setSeed(11130) //2048x2048
     // setSeed(111); // 1024
+    
+    setSeed(1999999)
+    // setSeed(8)
 
-
-    context.translate(center.x, center.y);
-    // context.translate(50, 50)
+    context.translate(center.x + 100, center.y - 100);
     for (let i = 0; i < z; i++) {
+      let p = noise2D(center.x + i, center.y + i, 100.0, 1.0)
+      let deg = p * 3600000000
       context.strokeStyle = "white";
-      context.rotate(
-        (noise2D(center.x + i, center.y + i, 100.0, 1.0) * 360) / 180
-      );
-      context.translate(0, i * 1);
+      context.rotate(deg);
+      context.translate(0, i);
+
+      let p2 = noise2D(center.x + i * i, center.y + i * i, i * 10000, 10.0)
+      context.translate(p2, 0)
+
       context.lineTo(0, 0);
       context.stroke();
+      context.rotate(-deg);
     }
+
+
+
   };
   
 };
