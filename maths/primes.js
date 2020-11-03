@@ -1,43 +1,34 @@
-const canvasSketch = require('canvas-sketch');
+const canvasSketch = require("canvas-sketch");
 
-const { lerp } = require('canvas-sketch-util/math');
-const { noise2D } = require('canvas-sketch-util/random');
+const { lerp } = require("canvas-sketch-util/math");
+const { noise2D } = require("canvas-sketch-util/random");
 
 const settings = {
-  dimensions: [ 2048, 2048 ]
+  dimensions: [2048, 2048],
 };
 
-const x = 100
-const y = 100
-const z = 1000
+const x = 100;
+const y = 100;
+const z = 1000;
 
-function test_prime(n)
-{
-
-  if (n===1)
-  {
+function test_prime(n) {
+  if (n === 1) {
     return false;
-  }
-  else if(n === 2)
-  {
+  } else if (n === 2) {
     return true;
-  }else
-  {
-    for(var x = 2; x < n; x++)
-    {
-      if(n % x === 0)
-      {
+  } else {
+    for (var x = 2; x < n; x++) {
+      if (n % x === 0) {
         return false;
       }
     }
-    return true;  
+    return true;
   }
 }
 
-
 const sketch = () => {
   return ({ context, width, height }) => {
-    context.fillStyle = 'blue';
+    context.fillStyle = "blue";
     context.fillRect(0, 0, width, height);
 
     // for (let u = 0; u < x; u++) {
@@ -65,21 +56,21 @@ const sketch = () => {
     let center = {
       x: width / 2,
       y: height / 2,
-    }
-    context.strokeStyle = 'white';
-    context.translate(center.x, center.y)
+    };
+    context.strokeStyle = "white";
+    context.translate(center.x, center.y);
     // context.translate(50, 50)
     for (let i = 0; i < z; i++) {
-      context.strokeStyle = 'white';
+      context.strokeStyle = "white";
       // context.translate(center.x + (i * 5), center.y + (i * 5))
       if (test_prime(i)) {
         //context.rotate(90 * Math.PI / 180 + (noise2D(center.x + i, center.y + i) * 0.35))
-        context.rotate(noise2D(center.x + i, center.y + i, 0.1) * 360 / 180)
+        context.rotate((noise2D(center.x + i, center.y + i, 0.1) * 360) / 180);
       }
-      context.translate(0, i * 0.05)
-      context.lineTo(0, 0)
+      context.translate(0, i * 0.005);
+      context.lineTo(0, 0);
       // var inc = 10
-      // var x = center.x + (i * inc) 
+      // var x = center.x + (i * inc)
       // var y = center.y + (i * inc)
       // var mod = i % 2 == 0 ? -1 : 1
       // if (test_prime(i)) {
@@ -89,9 +80,8 @@ const sketch = () => {
       //   y = center.y + (inc * i)
       // }
       // context.lineTo(x,y)
-      context.stroke()
+      context.stroke();
     }
-
   };
 };
 

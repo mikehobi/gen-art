@@ -9,7 +9,7 @@ const settings = {
 
 const x = 100;
 const y = 100;
-const z = 1000;
+const z = 100;
 
 const SEED = {
   HORSE: 2,
@@ -31,6 +31,7 @@ function test_prime(n) {
     }
     return true;
   }
+}
 
 const sketch = () => {
   return ({ context, width, height }) => {
@@ -71,11 +72,17 @@ const sketch = () => {
     context.translate(center.x, center.y);
     // context.translate(50, 50)
     for (let i = 0; i < z; i++) {
+      //   if (test_prime(i)) {
+      //     continue;
+      //   }
+
       context.strokeStyle = "white";
-      context.rotate(
-        (noise2D(center.x + i, center.y + i, 0.3 * 1.0, 10000.0) * 360) / 180
-      );
-      context.translate(0, i * 1);
+      //   context.rotate(
+      //     (noise2D(center.x + i, center.y + i, 10000, 0.5) * 360) / 180
+      //   );
+      context.rotate(i * 0.01);
+      //   context.translate(0, i * 0.1);
+      context.translate(0, 100 * (i / 10));
       context.lineTo(0, 0);
       context.stroke();
     }

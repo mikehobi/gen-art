@@ -9,7 +9,7 @@ const settings = {
 
 const x = 100;
 const y = 100;
-const z = 1000;
+const z = 100;
 
 const SEED = {
   HORSE: 2,
@@ -31,33 +31,12 @@ function test_prime(n) {
     }
     return true;
   }
+}
 
 const sketch = () => {
   return ({ context, width, height }) => {
-    context.fillStyle = "black";
+    context.fillStyle = "white";
     context.fillRect(0, 0, width, height);
-
-    // for (let u = 0; u < x; u++) {
-    //   for (let v = 0; v < y; v++) {
-    //     const pos = {
-    //       x: lerp(0, width, u / x),
-    //       y: lerp(0, height, v / y),
-    //     }
-    //     context.fillStyle = 'white';
-    //     context.fillRect(pos.x, pos.y, 4, 4);
-    //   }
-    // }
-
-    // let current = 0
-
-    // function getRotation(asdf) {
-    //   switch (asdf) {
-    //     case 0:
-    //     case 1:
-    //     case 2:
-    //     case 3:
-    //   }
-    // }
 
     let center = {
       x: width / 2,
@@ -66,16 +45,20 @@ const sketch = () => {
 
     // setSeed(SEED.HORSE);
 
-    setSeed(1113);
+    // setSeed(1114);
 
     context.translate(center.x, center.y);
     // context.translate(50, 50)
     for (let i = 0; i < z; i++) {
-      context.strokeStyle = "white";
-      context.rotate(
-        (noise2D(center.x + i, center.y + i, 0.3 * 1.0, 10000.0) * 360) / 180
-      );
-      context.translate(0, i * 1);
+      context.strokeStyle = "black";
+      context.rotate(800 / i);
+      let p = noise2D(center.x + i, center.y + i, 10, 100);
+      context.translate(0, 10 * (i * 0.1 + p * 0.1));
+
+      //   context.translate(p, p * p);
+      //   let p = noise2D(center.x + i, center.y + i, 110, 10);
+      //   context.translate(p, p * p);
+
       context.lineTo(0, 0);
       context.stroke();
     }

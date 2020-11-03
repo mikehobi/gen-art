@@ -31,6 +31,7 @@ function test_prime(n) {
     }
     return true;
   }
+}
 
 const sketch = () => {
   return ({ context, width, height }) => {
@@ -71,6 +72,10 @@ const sketch = () => {
     context.translate(center.x, center.y);
     // context.translate(50, 50)
     for (let i = 0; i < z; i++) {
+      if (test_prime(i)) {
+        continue;
+      }
+
       context.strokeStyle = "white";
       context.rotate(
         (noise2D(center.x + i, center.y + i, 0.3 * 1.0, 10000.0) * 360) / 180
