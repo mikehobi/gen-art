@@ -35,7 +35,7 @@ const sketch = (props) => {
   };
 
   // Draw random arcs
-  const count = 30;
+  const count = 800;
   let last = [center.x, center.y]
   for (let i = 0; i < count; i++) {
     // setup arc properties randomly
@@ -55,7 +55,7 @@ const sketch = (props) => {
       // x += i * Math.sin(i * 3.14 * 2) * 1
       // y += i * Math.cos(i * 3.14 * 2) * 1
       let u = i * 0.2
-      let m = 0.25;
+      let m = 0.021;
       let f = 1;
       // let f = 1;
       x += u * Math.sin(u * f) * m
