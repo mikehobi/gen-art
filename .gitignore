@@ -13,6 +13,8 @@ src/_includes/webpack.njk
 node_modules/
 .npm
 
+tmp/
+
 # Logs
 logs
 *.log

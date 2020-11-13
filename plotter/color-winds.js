@@ -17,8 +17,8 @@ const settings = {
 const ymargin = 4;
 const xmargin = 4;
 
-const rowCount = 90;
-const colCount = 90;
+const rowCount = 40;
+const colCount = 30;
 const createGrid = (rowCount, colCount) => {
   const rows = [];
   for (let y = 0; y < rowCount; y++) {
@@ -26,9 +26,21 @@ const createGrid = (rowCount, colCount) => {
     for (let x = 0; x < colCount; x++) {
       const u = colCount <= 1 ? 0.5 : x / (colCount - 1);
       const v = rowCount <= 1 ? 0.5 : y / (rowCount - 1);
-      arr.push({
-        pos: [u, v],
-      });
+
+      //   let r = random.chance(v);
+      let r = random.rangeFloor(0, 3);
+
+      switch (r) {
+        case 0:
+          break;
+        case 1:
+          break;
+        case 2:
+          arr.push({
+            pos: [u, v],
+          });
+          break;
+      }
     }
     rows.push(arr);
   }
@@ -38,50 +50,34 @@ const createGrid = (rowCount, colCount) => {
 const sketch = (props) => {
   const { width, height, units } = props;
 
+  random.setSeed(223483);
+
   const points = createGrid(rowCount, colCount);
 
   let paths = [];
 
-  let last = [0, 0];
-
-  function noisy(pos) {
+  function noisy(pos, invert) {
     let [u, v] = pos;
-    let noise = random.noise2D(u, v, 1.0, 3);
-    u += Math.sin(noise) * 0.01;
-    v += Math.cos(noise) * 0.01;
+    let noise = random.noise2D(u, v, 0.6, 4);
+    let a = invert ? 1 : -1;
+    u += Math.sin(noise) * 0.012 * a;
+    v += Math.cos(noise) * 0.012 * a;
+
     return [u, v];
   }
 
   points.forEach((arr, index) => {
-    // Start at beginning
-    var [u, v] = arr[0].pos;
-    var x = lerp(xmargin, width - xmargin, u);
-    var y = lerp(ymargin, height - ymargin, v);
-    last = [x, y];
-
     arr.forEach((i) => {
       const p = createPath((context) => {
-        var [u, v] = i.pos;
-
-        // Use last coord if needed.
-        // var [x, y] = last;
-
+        var [u, v] = noisy(i.pos, false);
+        var [uu, vv] = noisy(i.pos, true);
         var x = lerp(xmargin, width - xmargin, u);
         var y = lerp(ymargin, height - ymargin, v);
+        context.moveTo(x, y);
 
-        // let [toU, toV] = noisy(i.pos);
-
-        // var toX = lerp(xmargin, width - xmargin, toU);
-        // var toY = lerp(ymargin, height - ymargin, toV);
-
-        // context.moveTo(x, y);
-        let p = random.noise2D(u, v, 4.0, 3.14);
-        // let p2 = random.noise2D(u + 1, v + 1, 10.0, 1);
-        let start = p;
-        let end = start + 1;
-        context.arc(x, y, 0.1, start, end);
-
-        last = [x, y];
+        x = lerp(xmargin, width - xmargin, uu);
+        y = lerp(ymargin, height - ymargin, vv);
+        context.lineTo(x, y);
       });
 
       paths.push(p);
@@ -100,7 +96,7 @@ const sketch = (props) => {
       lineJoin: "round",
       lineCap: "round",
       lineWidth: 0.05,
-      optimize: true,
+      // optimize: true,
     });
 };
 
