@@ -44,6 +44,7 @@ const sketch = (props) => {
 
   let last = [0, 0];
 
+  // Apply noise here!
   function noisy(pos) {
     let [u, v] = pos;
     return [u, v];
