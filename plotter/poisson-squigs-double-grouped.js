@@ -6,9 +6,9 @@ const {
 } = require("canvas-sketch-util/penplot");
 const { clipPolylinesToBox } = require("canvas-sketch-util/geometry");
 const random = require("canvas-sketch-util/random");
-const { distSq, offsetLines } = require("../utils");
+const { distance, offsetLines } = require("../utils");
 
-const defaultSeed = "28950";
+const defaultSeed = "1337";
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
@@ -22,8 +22,8 @@ const settings = {
   units: "cm",
 };
 
-var r = 0.16;
-var k = 80;
+var r = 0.27;
+var k = 30;
 var active = [];
 var grid = [];
 var ordered = [];
@@ -31,8 +31,9 @@ var q = r / Math.sqrt(2);
 
 var density = 200;
 
-// var renderPath = 1;
-var side = 1;
+var numOfPathGroups = 2;
+var renderPath = 1;
+var side = 0;
 
 let xmargin = 2;
 let ymargin = 2;
@@ -47,8 +48,8 @@ const squig = (startX, startY, endX, endY, bezi, count) => {
   let _2qX0 = startX + (endX - startX) * 0.75;
   let _2qY0 = startY + (endY - startY) * 0.75;
 
-  var s = random.noise2D(startX, startY, 0.0125);
-  let mag = 2.5 * s;
+  let mag = 0.8;
+  //   var mod = count % 2 == 0 ? mag * -1 : mag;
 
   let _2qX1 = _2qX0 + (diffY / 2) * mag * -1;
   let _2qY1 = _2qY0 - (diffX / 2) * mag * -1;
@@ -82,7 +83,11 @@ const sketch = (props) => {
   var h = height - ymargin * 2;
 
   // path groups
-  const paths = [];
+  // const paths = [];
+
+  const paths = Array.from(Array(numOfPathGroups), () => []);
+
+  console.log(paths);
 
   let center = {
     x: w / 2,
@@ -147,8 +152,8 @@ const sketch = (props) => {
               let neighbor = grid[index];
 
               if (neighbor) {
-                var d = distSq(sample, neighbor);
-                if (d < r * r) {
+                var d = distance(sample, neighbor);
+                if (d < r) {
                   ok = false;
                 }
               }
@@ -168,12 +173,16 @@ const sketch = (props) => {
             lastBezier = bz;
             count++;
 
-            var s = random.noise2D(x, y, 0.25);
+            // let c = Math.cos(x);
+            // let s = Math.sin(ymargin + y * (1 / 2));
+            // console.log(s);
+            // console.log(c);
+            var s = random.noise2D(x + 999, y, 0.25);
 
-            // s = Math.floor(((s + 1) / 2) * numOfPathGroups);
+            s = Math.floor(((s + 1) / 2) * numOfPathGroups);
 
             // console.log(s);
-            paths.push(p);
+            paths[s].push(p);
 
             // if (s < -0.33) {
             //   paths[0].push(p);
@@ -207,7 +216,7 @@ const sketch = (props) => {
     attempts--;
   }
 
-  let lines = pathsToPolylines(paths, { units });
+  let lines = pathsToPolylines(paths[renderPath], { units });
 
   lines = offsetLines(lines, [xmargin, ymargin]);
 
@@ -218,7 +227,7 @@ const sketch = (props) => {
       lineCap: "round",
       lineWidth: 0.05,
       optimize: {
-        sort: true,
+        sort: false,
         removeDuplicates: false,
         removeCollinear: false,
         merge: true,

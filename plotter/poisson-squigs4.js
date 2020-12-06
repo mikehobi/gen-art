@@ -8,7 +8,7 @@ const { clipPolylinesToBox } = require("canvas-sketch-util/geometry");
 const random = require("canvas-sketch-util/random");
 const { distance, offsetLines } = require("../utils");
 
-const defaultSeed = "1234";
+const defaultSeed = null;
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
@@ -23,16 +23,16 @@ const settings = {
 };
 
 var r = 0.5;
-var k = 100;
+var k = 30;
 var active = [];
 var grid = [];
 var ordered = [];
 var q = r / Math.sqrt(2);
-var density = 100;
+var density = 20;
 var bezier = true;
 
 let xmargin = 2;
-let ymargin = 2;
+let ymargin = 3;
 
 const squig = (startX, startY, endX, endY, bezi, count) => {
   let diffX = endX - startX;
