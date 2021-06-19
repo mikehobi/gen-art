@@ -15,15 +15,15 @@ console.log("Random Seed:", random.getSeed());
 
 const settings = {
   suffix: random.getSeed(),
-  dimensions: "A4",
+  dimensions: "letter",
   orientation: "portrait",
   pixelsPerInch: 300,
   scaleToView: true,
-  units: "cm",
+  units: "in",
 };
 
-let xmargin = 2;
-let ymargin = 3;
+let xmargin = 1;
+let ymargin = 1;
 
 const sketch = (props) => {
   const { width, height, units } = props;
@@ -37,6 +37,20 @@ const sketch = (props) => {
     x: width / 2,
     y: height / 2,
   };
+
+  let target = createPath((context) => {
+    context.arc(center.x, center.y, 1, 0, Math.PI * 2, false);
+  });
+  paths.push(target);
+
+  let line = createPath((c) => {
+    c.moveTo(center.x - 2, center.y);
+    c.lineTo(center.x + 2, center.y);
+    c.moveTo(center.x, center.y - 2);
+    c.lineTo(center.x, center.y + 2);
+  });
+
+  paths.push(line);
 
   const frame = createPath((context) => {
     context.rect(xmargin, ymargin, width - xmargin * 2, height - ymargin * 2);

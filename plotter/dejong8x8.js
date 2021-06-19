@@ -10,22 +10,27 @@ const { distance, offsetLines, distSq, gridCoord } = require("../utils");
 const { lerp, mapRange } = require("canvas-sketch-util/math");
 
 // const defaultSeed = "47988";
-const defaultSeed = "773170";
+// const defaultSeed = "773170";
+const defaultSeed = "206766";
+// const defaultSeed = "405010";
+// const defaultSeed = "146865";
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
 
+var count = 6000;
+
 const settings = {
   suffix: random.getSeed(),
-  dimensions: "A4",
+  dimensions: [20.32, 20.32],
   orientation: "portrait",
   pixelsPerInch: 300,
   scaleToView: true,
   units: "cm",
 };
 
-let xmargin = 4;
-let ymargin = 7;
+let xmargin = 6;
+let ymargin = 6;
 
 const sketch = (props) => {
   const { width, height, units } = props;
@@ -39,10 +44,10 @@ const sketch = (props) => {
 
   //3.1083058390090565 2.7521332963335845 1.3650539968263027 2.7951015705616857
 
-  //   var a = 2.6942928979372347;
-  //   var b = 1.864238515614251;
-  //   var c = 0.6298985031225722;
-  //   var d = 2.753009367127579;
+  // var a = 2.6942928979372347;
+  // var b = 1.864238515614251;
+  // var c = 0.6298985031225722;
+  // var d = 2.753009367127579;
 
   //   var a = 0.66;
   //   var b = -1.46;
@@ -59,10 +64,10 @@ const sketch = (props) => {
   //     c = 2.4,
   //     d = -2.1;
 
-  //   var a = -0.709,
-  //     b = 1.638,
-  //     c = 0.452,
-  //     d = 1.74;
+  // var a = -0.709,
+  //   b = 1.638,
+  //   c = 0.452,
+  //   d = 1.74;
 
   var a = random.range(-Math.PI, Math.PI);
   var b = random.range(-Math.PI, Math.PI);
@@ -77,7 +82,6 @@ const sketch = (props) => {
   console.log(a, b, c, d);
 
   var grid = [];
-  var count = 4000;
   x = 0;
   y = 0;
 
@@ -97,6 +101,9 @@ const sketch = (props) => {
 
   for (var i = 0; i < grid.length; i++) {
     let [x, y] = grid[i];
+
+    // x = random.range(0, 999);
+    // y = random.range(0, 999);
 
     let xx = mapRange(x, min[0], max[0], xmargin, width - xmargin);
     let yy = mapRange(y, min[1], max[1], ymargin, height - ymargin);

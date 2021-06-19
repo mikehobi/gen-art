@@ -87,8 +87,6 @@ const sketch = (props) => {
 
   const paths = Array.from(Array(numOfPathGroups), () => []);
 
-  console.log(paths);
-
   let center = {
     x: w / 2,
     y: h / 2,

@@ -7,6 +7,7 @@ const {
 const { clipPolylinesToBox } = require("canvas-sketch-util/geometry");
 const random = require("canvas-sketch-util/random");
 const { distance, offsetLines } = require("../utils");
+const { inverseLerp, lerp } = require("canvas-sketch-util/math");
 
 const defaultSeed = null;
 random.setSeed(defaultSeed || random.getRandomSeed());
@@ -22,8 +23,8 @@ const settings = {
   units: "cm",
 };
 
-let xmargin = 2;
-let ymargin = 3;
+let xmargin = 4;
+let ymargin = 4;
 
 const sketch = (props) => {
   const { width, height, units } = props;
@@ -38,7 +39,7 @@ const sketch = (props) => {
     y: height / 2,
   };
 
-  var r = 0.2;
+  var r = 0.1;
   var k = 30;
   var active = [];
   var grid = [];
@@ -60,10 +61,9 @@ const sketch = (props) => {
   grid[i + j * cols] = pos;
   active.push(pos);
 
-  var attempts = 1;
+  var attempts = 2;
   while (attempts > 0) {
     if (attempts !== 20) {
-      console.log("another");
       var x = random.range(0, w);
       var y = random.range(0, h);
       var i = Math.floor(x / q);
@@ -132,6 +132,31 @@ const sketch = (props) => {
   for (var i = 0; i < grid.length; i++) {
     if (grid[i]) {
       let [x, y] = grid[i];
+
+      let u = inverseLerp(xmargin, width - xmargin * 2, x);
+      let v = inverseLerp(ymargin, height - ymargin * 2, y);
+
+      let noise = random.noise3D(u, v, 1, 100, 1);
+
+      let uu = u * Math.PI + Math.PI * 0.5;
+      // let uu = u * Math.PI + Math.PI;
+      let vv = v * Math.PI;
+
+      u = Math.sin(uu) * Math.sin(vv);
+      v = Math.cos(vv);
+      let z = Math.cos(uu) * Math.sin(vv);
+
+      var scale = 0.5;
+
+      u *= scale;
+      v *= scale;
+
+      u += scale;
+      v += scale;
+
+      x = lerp(0, width - xmargin * 2, u);
+      y = lerp(0, height - ymargin * 2, v);
+
       const p = createPath((context) => {
         context.moveTo(x, y);
         context.lineTo(x + 0.001, y + 0.001);

@@ -23,7 +23,7 @@ const ymargin = 2.54;
 const xmargin = 2.54;
 
 const rowCount = 100;
-const colCount = 5;
+const colCount = 100;
 
 const intensity = 0.15;
 const frequency = 2;
@@ -84,45 +84,45 @@ const sketch = (props) => {
     y: height / 2,
   };
 
-  // points.forEach((arr, row) => {
-  //   var [u, v] = noisy(arr[0].pos);
-  //   var x = lerp(xmargin, width - xmargin, u);
-  //   var y = lerp(ymargin, height - ymargin, v);
-  //   last = [x, y];
+  points.forEach((arr, row) => {
+    var [u, v] = noisy(arr[0].pos);
+    var x = lerp(xmargin, width - xmargin, u);
+    var y = lerp(ymargin, height - ymargin, v);
+    last = [x, y];
 
-  //   arr.forEach((point, col) => {
-  //     var [u, v] = noisy(point.pos);
-  //     var [lastX, lastY] = last;
+    arr.forEach((point, col) => {
+      var [u, v] = noisy(point.pos);
+      var [lastX, lastY] = last;
 
-  //     var x = lerp(xmargin, width - xmargin, u);
-  //     var y = lerp(ymargin - offset[0], height - ymargin + offset[1], v);
+      var x = lerp(xmargin, width - xmargin, u);
+      var y = lerp(ymargin - offset[0], height - ymargin + offset[1], v);
 
-  //     let intersect = checkPrevious(x, y, points, row, col);
-  //     if (!intersect) {
-  //       const p = createPath((context) => {
-  //         context.moveTo(lastX, lastY);
-  //         context.lineTo(x, y);
-  //       });
-  //       paths.push(p);
-  //     }
+      let intersect = checkPrevious(x, y, points, row, col);
+      if (!intersect) {
+        const p = createPath((context) => {
+          context.moveTo(lastX, lastY);
+          context.lineTo(x, y);
+        });
+        paths.push(p);
+      }
 
-  //     last = [x, y];
-  //   });
+      last = [x, y];
+    });
+  });
+
+  // let target = createPath((context) => {
+  //   context.arc(center.x, center.y, 1, 0, Math.PI * 2, false);
+  // });
+  // paths.push(target);
+
+  // let line = createPath((c) => {
+  //   c.moveTo(center.x - 5, center.y);
+  //   c.lineTo(center.x + 5, center.y);
+  //   c.moveTo(center.x, center.y - 5);
+  //   c.lineTo(center.x, center.y + 5);
   // });
 
-  let target = createPath((context) => {
-    context.arc(center.x, center.y, 1, 0, Math.PI * 2, false);
-  });
-  paths.push(target);
-
-  let line = createPath((c) => {
-    c.moveTo(center.x - 5, center.y);
-    c.lineTo(center.x + 5, center.y);
-    c.moveTo(center.x, center.y - 5);
-    c.lineTo(center.x, center.y + 5);
-  });
-
-  paths.push(line);
+  // paths.push(line);
 
   // const frame = createPath((context) => {
   //   context.rect(xmargin, ymargin, width - xmargin * 2, height - ymargin * 2);

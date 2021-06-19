@@ -6,9 +6,9 @@ const {
 } = require("canvas-sketch-util/penplot");
 const { clipPolylinesToBox } = require("canvas-sketch-util/geometry");
 const random = require("canvas-sketch-util/random");
-const { distSq, offsetLines } = require("../utils");
+const { distSq, offsetLines, sphereize, inch } = require("../utils");
 
-const defaultSeed = null;
+const defaultSeed = "28950";
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
@@ -22,64 +22,70 @@ const settings = {
   units: "cm",
 };
 
-var r = 0.16;
-var k = 80;
+var r = 0.1;
+var k = 30;
 var active = [];
 var grid = [];
 var ordered = [];
 var q = r / Math.sqrt(2);
 
-var density = 200;
+var density = 2;
 
 // var renderPath = 1;
-var side = 1;
+var side = 0;
 
-let xmargin = 2;
-let ymargin = 2;
+// let xmargin = 0;
+// let ymargin = 0;
 
-const squig = (startX, startY, endX, endY, bezi, count) => {
-  let diffX = endX - startX;
-  let diffY = endY - startY;
+const drawHeight = 5;
+const drawWidth = 5;
 
-  let qX1 = startX + (startX - bezi[0]);
-  let qY1 = startY + (startY - bezi[1]);
-
-  let _2qX0 = startX + (endX - startX) * 0.75;
-  let _2qY0 = startY + (endY - startY) * 0.75;
-
-  var s = random.noise2D(startX, startY, 0.0125);
-  let mag = 2.5 * s;
-
-  let _2qX1 = _2qX0 + (diffY / 2) * mag * -1;
-  let _2qY1 = _2qY0 - (diffX / 2) * mag * -1;
-
-  let _2qX2 = _2qX0 + (diffY / 2) * mag;
-  let _2qY2 = _2qY0 - (diffX / 2) * mag;
-
-  return [
-    createPath((ctx) => {
-      if (side == 0) {
-        ctx.moveTo(startX, startY);
-        ctx.bezierCurveTo(qX1, qY1, _2qX1, _2qY1, endX, endY);
-      } else if (side == 1) {
-        ctx.moveTo(startX, startY);
-        ctx.bezierCurveTo(qX1, qY1, _2qX2, _2qY2, endX, endY);
-      } else {
-        ctx.moveTo(startX, startY);
-        ctx.bezierCurveTo(qX1, qY1, _2qX1, _2qY1, endX, endY);
-        ctx.moveTo(startX, startY);
-        ctx.bezierCurveTo(qX1, qY1, _2qX2, _2qY2, endX, endY);
-      }
-    }),
-    [_2qX1, _2qY1],
-  ];
-};
+const ymargin = inch((11 - drawHeight) / 2);
+const xmargin = inch((8.5 - drawWidth) / 2);
 
 const sketch = (props) => {
   const { width, height, units } = props;
 
   var w = width - xmargin * 2;
   var h = height - ymargin * 2;
+
+  const squig = (startX, startY, endX, endY, bezi, count) => {
+    let diffX = endX - startX;
+    let diffY = endY - startY;
+
+    let qX1 = startX + (startX - bezi[0]);
+    let qY1 = startY + (startY - bezi[1]);
+
+    let _2qX0 = startX + (endX - startX) * 0.75;
+    let _2qY0 = startY + (endY - startY) * 0.75;
+
+    var s = random.noise2D(startX, startY, 0.0125);
+    let mag = 2.5 * s;
+
+    let _2qX1 = _2qX0 + (diffY / 2) * mag * -1;
+    let _2qY1 = _2qY0 - (diffX / 2) * mag * -1;
+
+    let _2qX2 = _2qX0 + (diffY / 2) * mag;
+    let _2qY2 = _2qY0 - (diffX / 2) * mag;
+
+    return [
+      createPath((ctx) => {
+        if (side == 0) {
+          ctx.moveTo(startX, startY);
+          ctx.bezierCurveTo(qX1, qY1, _2qX1, _2qY1, endX, endY);
+        } else if (side == 1) {
+          ctx.moveTo(startX, startY);
+          ctx.bezierCurveTo(qX1, qY1, _2qX2, _2qY2, endX, endY);
+        } else {
+          ctx.moveTo(startX, startY);
+          ctx.bezierCurveTo(qX1, qY1, _2qX1, _2qY1, endX, endY);
+          ctx.moveTo(startX, startY);
+          ctx.bezierCurveTo(qX1, qY1, _2qX2, _2qY2, endX, endY);
+        }
+      }),
+      [_2qX1, _2qY1],
+    ];
+  };
 
   // path groups
   const paths = [];
@@ -168,20 +174,7 @@ const sketch = (props) => {
             lastBezier = bz;
             count++;
 
-            var s = random.noise2D(x, y, 0.25);
-
-            // s = Math.floor(((s + 1) / 2) * numOfPathGroups);
-
-            // console.log(s);
             paths.push(p);
-
-            // if (s < -0.33) {
-            //   paths[0].push(p);
-            // } else if (s < 0.33) {
-            //   paths[1].push(p);
-            // } else {
-            //   paths[2].push(p);
-            // }
 
             break;
           }
@@ -208,6 +201,8 @@ const sketch = (props) => {
   }
 
   let lines = pathsToPolylines(paths, { units });
+
+  lines = sphereize(lines, 0, 0, width - xmargin * 2, height - ymargin * 2);
 
   lines = offsetLines(lines, [xmargin, ymargin]);
 
