@@ -9,24 +9,30 @@ const random = require("canvas-sketch-util/random");
 const { clipPolylinesToBox } = require("canvas-sketch-util/geometry");
 const { inch, clamp } = require("../utils");
 
-const settings = {
-  dimensions: "letter",
-  units: "cm",
-  pixelsPerInch: 300,
-};
-
-// const defaultSeed = "73539";
+// const defaultSeed = "57374";
 const defaultSeed = null;
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
 
+const settings = {
+  suffix: random.getSeed(),
+  dimensions: "tabloid",
+  orientation: "portrait",
+  pixelsPerInch: 300,
+  scaleToView: true,
+  units: "cm",
+
+  name: "(polar-disc)",
+  suffix: random.getSeed(),
+};
+
 // Adjust margins to drawHeight and drawWidth
 const drawHeight = 5;
 const drawWidth = 5;
 
-const ymargin = inch((11 - drawHeight) / 2);
-const xmargin = inch((8.5 - drawWidth) / 2);
+// const ymargin = inch((11 - drawHeight) / 2);
+// const xmargin = inch((8.5 - drawWidth) / 2);
 // const ymargin = 2;
 // const xmargin = 2;
 
@@ -91,12 +97,44 @@ const sketch = (props) => {
     paths.push(p);
   }
 
-  let count = 100;
-  let noisec = 0.5 / count;
-  let segments = 400;
+  function dipInInk() {
+    const p = createPath((context) => {
+      context.moveTo(6, 10);
+      context.lineTo(6.3, 10.3);
+    });
+    // const p = createPath((context) => {
+    //   const segs = 5;
+    //   const ox = 6;
+    //   const oy = 10;
+    //   let last = [null, null];
+    //   for (let a = 0; a <= segs; a++) {
+    //     let theta = mapRange(a, 0, segs, 0, Math.PI * 2);
+    //     let radius = 0.15;
+    //     let r = radius;
+    //     let x = ox + r * Math.cos(theta);
+    //     let y = oy + r * Math.sin(theta);
+    //     let [lx, ly] = last;
+    //     if (!lx || !ly) {
+    //       [lx, ly] = [x, y];
+    //     }
+
+    //     context.moveTo(lx, ly);
+    //     context.lineTo(x, y);
+    //     last = [x, y];
+    //   }
+    // });
+    paths.push(p);
+  }
+
+  let count = 3;
+  let noisec = 0.6 / count;
+  let segments = 801;
   let lastPoints = [];
+
   for (let i = 0; i < count; i++) {
-    // let y = mapRange(i, 0, count, -5, 5);
+    // dipInInk();
+
+    const rando = 0;
     let y = mapRange(i, 0, count, 0, 0);
     let origin = [0, y];
 
@@ -104,13 +142,14 @@ const sketch = (props) => {
     let last = [null, null];
     let nextPoints = [];
 
-    // let radius = 5; //* random.range(1, 1.1);
-    for (let a = 0; a <= segments + 1; a++) {
+    const randy = random.range(0, Math.PI);
+
+    for (let a = 0 + rando; a <= segments + rando; a++) {
       let theta = mapRange(a, 0, segments, 0, Math.PI * 2);
-      let noise = polarNoise(theta, i * noisec, 3, 0.01 + 0.01 * i);
+      let noise = polarNoise(theta, i * noisec, 2.5, 0.01 + 0.01 * i);
 
       let radius = 0.1 + i * noisec * 20;
-      //   let radius = 6 * random.range(1, 1.5);
+
       let r = radius + noise;
       let x = ox + r * Math.cos(theta);
       let y = oy + r * Math.sin(theta);
@@ -121,27 +160,10 @@ const sketch = (props) => {
         [lx, ly] = [x, y];
       }
 
-      if (lastPoints[i - 1]) {
-        let intersect;
-        let numberToCheck = 50;
-        let max = clamp(i - numberToCheck, 0, 999);
-        for (let j = i; j > max; j--) {
-          intersect = inside([x, y], lastPoints[j - 1]);
-          if (intersect) {
-            break;
-          }
-        }
-
-        if (!intersect) {
-          addLine([lx, ly], [x, y]);
-        }
-      } else {
-        addLine([lx, ly], [x, y]);
-      }
+      addLine([lx, ly], [x, y]);
       last = [x, y];
       nextPoints.push([x, y]);
     }
-
     lastPoints[i] = nextPoints;
   }
 
@@ -157,12 +179,12 @@ const sketch = (props) => {
       ...props,
       lineJoin: "round",
       lineCap: "round",
-      lineWidth: 0.01,
+      lineWidth: 0.45,
       optimize: {
         sort: false,
         removeDuplicates: false,
         removeCollinear: false,
-        merge: true,
+        merge: false,
       },
     });
 };

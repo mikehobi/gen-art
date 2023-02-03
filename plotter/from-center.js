@@ -6,15 +6,22 @@ const {
 } = require("canvas-sketch-util/penplot");
 const { lerp, mapRange } = require("canvas-sketch-util/math");
 const random = require("canvas-sketch-util/random");
-const { inch } = require("../utils");
+const { clipPolylinesToBox } = require("canvas-sketch-util/geometry");
+const { inch, clamp } = require("../utils");
 
 const settings = {
-  dimensions: "letter",
-  units: "cm",
+  // suffix: random.getSeed(),
+  dimensions: "tabloid",
+  orientation: "portrait",
   pixelsPerInch: 300,
+  scaleToView: true,
+  units: "cm",
+
+  prefix: "(from-center)",
+  suffix: random.getSeed(),
 };
 
-const defaultSeed = "73539";
+const defaultSeed = "330168";
 // const defaultSeed = null;
 random.setSeed(defaultSeed || random.getRandomSeed());
 
@@ -26,50 +33,28 @@ const drawWidth = 5;
 
 const ymargin = inch((11 - drawHeight) / 2);
 const xmargin = inch((8.5 - drawWidth) / 2);
-// const ymargin = 2;
-// const xmargin = 2;
 
 const sketch = (props) => {
   const { width, height, units } = props;
 
-  //   function checkIntersect(x, y, points, row, col, z = 1, offset = [0, 0]) {
-  //     //check last rows
-
-  //     for (let i = 0; i <= rowCount; i++) {
-  //       if (points[row - i]) {
-  //         var last = points[row - i][col];
-  //         var [u, v] = noisy(offy(last.pos, offset));
-  //         var lx = lerp(xmargin, width - xmargin, u);
-  //         var ly = lerp(ymargin, height - ymargin, v);
-
-  //         if (ly <= y) {
-  //           return [x, ly];
-  //         }
-  //       }
-  //     }
-
-  //     return [x, y];
-  //   }
+  console.log(random.getSeed());
 
   let paths = [];
 
   function noisy(pos) {
     let [u, v] = pos;
-    let noise = random.noise3D(u, v, z, frequency, intensity);
-    noise *= Math.sin(v * Math.PI);
-    v += noise * multi;
     return [u, v];
   }
 
   let center = {
-    x: width / 2,
-    y: height / 2,
+    x: width / 4,
+    y: height / 4,
   };
 
-  function polarNoise(t, f = 1, a = 0.5) {
+  function polarNoise(t, z = 1, f = 1, a = 0.5) {
     let x = Math.cos(t);
     let y = Math.sin(t);
-    return random.noise2D(x, y, f, a);
+    return random.noise3D(x, y, z, f, a);
   }
 
   function centered(coord) {
@@ -87,33 +72,45 @@ const sketch = (props) => {
     paths.push(p);
   }
 
-  let count = 50;
+  let count = 300;
   for (let i = 0; i < count; i++) {
-    let y = mapRange(i, 0, count, -5, 5);
-    let origin = [0, y];
+    let center = centered([0, 0]);
 
-    let [ox, oy] = origin;
-    var last = [null, null];
+    let theta = mapRange(i, 0, count, 0, Math.PI * 2);
 
-    for (let a = 0; a <= Math.PI * 2; a += Math.PI / 24) {
-      let noise = polarNoise(a);
+    // let noisec = 0.5 / count;
+    let noise = polarNoise(theta, 1.0, 1, 0.5);
 
-      let r = 3 + noise;
-      let x = ox + r * Math.cos(a);
-      let y = oy + r * Math.sin(a);
+    let r = 10 + noise;
 
-      // Get last, or set last for first point.
-      let [lx, ly] = last;
-      if (!lx || !ly) {
-        [lx, ly] = [x, y];
-      }
+    let s = 4;
+    let x = center[0] + r * Math.cos(theta); //+ noise * s;
+    let y = center[1] + r * Math.sin(theta) + noise * s;
 
-      addLine([lx, ly], [x, y]);
-      last = [x, y];
+    let p = 0.2;
+    if (i <= 15 || i >= 280) {
+      p = 0;
+    }
+
+    let offCenter = [
+      center[0] + p * Math.cos(theta),
+      center[1] + p * Math.sin(theta),
+    ];
+
+    // if (i <= 15 || i >= 280) {
+    if (i <= 122 || i >= 280) {
+      // addLine(offCenter, [x, y]);
+    } else {
+      addLine(offCenter, [x, y]);
     }
   }
 
   lines = pathsToPolylines(paths, { units });
+
+  // Clip to bounds, using a margin in working units
+  //   const margin = 7; // in working 'units' based on settings
+  //   const box = [margin, margin, width - margin, height - margin];
+  //   lines = clipPolylinesToBox(lines, box);
 
   return (props) =>
     renderPaths(lines, {

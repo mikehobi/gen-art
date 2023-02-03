@@ -224,7 +224,7 @@ const sketch = (props) => {
     });
   });
 
-  lines = pathsToPolylines(paths[2], { units });
+  lines = pathsToPolylines(paths, { units });
 
   const box = [xmargin, ymargin, width - xmargin, height - ymargin];
   lines = clipPolylinesToBox(lines, box);

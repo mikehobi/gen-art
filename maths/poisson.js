@@ -16,8 +16,8 @@ const settings = {
   orientation: "portrait",
   pixelsPerInch: 300,
   scaleToView: true,
-  units: "cm",
-  animate: true,
+  units: "in",
+  animate: false,
   duration: 15,
 };
 
@@ -29,11 +29,14 @@ let xmargin = unit(5);
 let ymargin = unit(5);
 
 const sketch = () => {
-  return ({ context, width, height, playhead }) => {
-    const defaultSeed = "q3sdf2";
-    // const defaultSeed = null;
+  return ({ context, width, height }) => {
+    // const defaultSeed = "580959";
+    const defaultSeed = null;
+
     random.setSeed(defaultSeed || random.getRandomSeed());
     console.log("Random Seed:", random.getSeed());
+
+    const playhead = random.range(0, 15);
 
     context.fillStyle = "black";
     context.fillRect(0, 0, width, height);
@@ -48,8 +51,11 @@ const sketch = () => {
       y: height / 2,
     };
 
-    var r = unit(0.2);
-    var k = 30;
+    // var r = unit(random.range(0.08, 0.1));
+    var k = random.rangeFloor(1, 100);
+    var r = 0.1;
+    // var k = 19;
+    console.log("Random K:", k);
     var active = [];
     var grid = [];
     var q = r / Math.sqrt(2);
@@ -60,8 +66,13 @@ const sketch = () => {
       grid[i] = undefined;
     }
 
-    var x = center.x;
-    var y = center.y;
+    // var x = center.x;
+    // var y = center.y;
+    // var i = Math.floor(x / q);
+    // var j = Math.floor(y / q);
+
+    var x = random.range(0, w);
+    var y = random.range(0, h);
     var i = Math.floor(x / q);
     var j = Math.floor(y / q);
     var pos = [x, y];

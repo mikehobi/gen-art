@@ -35,7 +35,7 @@ const drawWidth = randomSize;
 const ymargin = inch((11 - drawHeight) / 2);
 const xmargin = inch((8.5 - drawWidth) / 2);
 
-const rowCount = 20;
+const rowCount = 40;
 const colCount = 100;
 
 const smooth = 4;
@@ -66,7 +66,7 @@ function sphere(pos) {
   let noise = random.noise2D(u, v, frequency, intensity);
 
   u += z * 0.025;
-  v += z * 0.2 + noise;
+  v += z * 0.2;
 
   return [u, v, z];
 }

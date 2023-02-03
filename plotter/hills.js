@@ -10,40 +10,43 @@ const {
 } = require("canvas-sketch-util/geometry");
 const { lerp, mapRange } = require("canvas-sketch-util/math");
 const random = require("canvas-sketch-util/random");
-
+var renderPath = 1;
 const settings = {
-  dimensions: "letter",
+  dimensions: "tabloid",
   units: "cm",
   pixelsPerInch: 300,
+
+  name: "(hills)" + renderPath,
+  suffix: random.getSeed(),
 };
 
 const inch = (inch) => {
   return 2.54 * inch;
 };
 
-const defaultSeed = "597277";
+// const defaultSeed = "597277";
+const defaultSeed = "657283";
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
 
 // Adjust margins to drawHeight and drawWidth
-const drawHeight = 4;
-const drawWidth = 4;
+const drawHeight = 14;
+const drawWidth = 8;
 
-const ymargin = inch((11 - drawHeight) / 2);
-const xmargin = inch((8.5 - drawWidth) / 2);
+const ymargin = inch((17 - drawHeight) / 2);
+const xmargin = inch((11 - drawWidth) / 2);
 
-const rowCount = 100;
-const colCount = 50;
+const rowCount = 160;
+const colCount = 20;
 
-const intensity = 0.008;
-const frequency = 10;
-const z = 0.09;
-const zShift = 0.02;
+const intensity = 0.009;
+const frequency = 2.4;
+const z = 0.9;
+const zShift = 0.05;
 const offset = [0, 0]; // y min, y max
 
-var viewAllPaths = true;
-var renderPath = 1;
+var viewAllPaths = false;
 
 if (viewAllPaths) {
   renderPath = -1;
@@ -89,8 +92,18 @@ const sketch = (props) => {
   let min = -intensity;
   let max = intensity;
 
+  function dipInInk() {
+    const p = createPath((context) => {
+      context.moveTo(2, 2);
+      context.lineTo(2.05, 2.05);
+    });
+    paths.push(p);
+  }
+
   if (renderPath == 0 || renderPath == -1) {
     points.forEach((arr, row) => {
+      dipInInk();
+
       var [u, v] = noisy(arr[0].pos, z + zShift);
       var x = lerp(xmargin, width - xmargin, u);
       var y = lerp(ymargin, height - ymargin, v);
@@ -117,12 +130,13 @@ const sketch = (props) => {
 
   if (renderPath == 1 || renderPath == -1) {
     points.forEach((arr, row) => {
-      var [u, v] = noisy(arr[0].pos, z + zShift + zShift);
+      dipInInk();
+      var [u, v] = noisy(arr[arr.length - 1].pos, z + zShift + zShift);
       var x = lerp(xmargin, width - xmargin, u);
       var y = lerp(ymargin, height - ymargin, v);
       last = [x, y];
 
-      arr.forEach((point, col) => {
+      arr.reverse().forEach((point, col) => {
         var [u, v] = noisy(point.pos, z + zShift + zShift);
         var [lastX, lastY] = last;
 

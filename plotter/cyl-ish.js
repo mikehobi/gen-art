@@ -14,7 +14,7 @@ const random = require("canvas-sketch-util/random");
 const { noise1D } = require("canvas-sketch-util/random");
 
 const settings = {
-  dimensions: "letter",
+  dimensions: "tabloid",
   units: "cm",
   pixelsPerInch: 300,
 };
@@ -23,36 +23,35 @@ const inch = (inch) => {
   return 2.54 * inch;
 };
 
-const defaultSeed = null;
+const defaultSeed = "705764";
+// const defaultSeed = null;
 random.setSeed(defaultSeed || random.getRandomSeed());
 
 console.log("Random Seed:", random.getSeed());
 
 // Adjust margins to drawHeight and drawWidth
-let randomSize = random.range(4, 6);
+let randomSize = random.range(8, 8);
 const drawHeight = randomSize;
 const drawWidth = randomSize;
 
-const ymargin = inch((11 - drawHeight) / 2);
-const xmargin = inch((8.5 - drawWidth) / 2);
+const ymargin = inch((17 - drawHeight) / 2);
+const xmargin = inch((11 - drawWidth) / 2);
 
-const rowCount = 200;
+const rowCount = 40;
 const colCount = 100;
 
-const intensity = 0.03;
-const frequency = 3;
+const intensity = 0.15;
+const frequency = 4;
 const z = 0;
 const offset = [0, 0]; // y min, y max
 
 const zShift = 0.01;
 
-const cmy = ["yellow", "cyan", "magenta"];
+const cmy = ["r", "g", "b"];
 
 function indexFromColor(color) {
   return cmy.indexOf(color);
 }
-
-const renderColor = "magenta";
 
 const sketch = (props) => {
   const { width, height, units } = props;
@@ -95,14 +94,14 @@ const sketch = (props) => {
     let noise = random.noise3D(
       u * 1,
       v,
-      3,
+      z,
       frequency + (0.5 + freq),
       intensity
     );
     let zz = Math.cos(uu) * Math.sin(vv) + noise;
 
     u -= zz * 0.3 * noise;
-    v -= zz * 0.3 * noise - zz * 0.5;
+    v -= zz * 0.3 * noise; //- zz * 0.5;
     // v -= 0.3 * noise;
 
     v += 0.05;
@@ -121,18 +120,18 @@ const sketch = (props) => {
   let paths = [[], [], []];
 
   const [r, g, b] = cmy;
-  let COLORS = [r];
+  let COLORS = [r, g, b];
   COLORS.forEach((color, index) => {
     points.forEach((arr, z) => {
       let rand = random.rangeFloor(0, 3);
 
-      var [u, v] = noisy(arr[0].pos, z + index * zShift, rand);
+      var [u, v] = noisy(arr[0].pos, z + index * zShift, 1);
       var x = lerp(xmargin, width - xmargin, u);
       var y = lerp(ymargin, height - ymargin, v);
       last = [x, y];
 
       arr.forEach((point, col) => {
-        var [u, v] = noisy(point.pos, z + index * zShift, rand);
+        var [u, v] = noisy(point.pos, z + index * zShift, 1);
         var [lastX, lastY] = last;
 
         var x = lerp(xmargin, width - xmargin, u);
@@ -151,8 +150,11 @@ const sketch = (props) => {
     });
   });
 
-  // pathsToRender = paths[indexFromColor(renderColor)];
-  pathsToRender = paths;
+  const renderColor = "r";
+  // const renderColor = "b";
+  pathsToRender = paths[indexFromColor(renderColor)];
+
+  console.log(paths);
 
   lines = pathsToPolylines(pathsToRender, { units });
   return (props) =>
@@ -160,7 +162,8 @@ const sketch = (props) => {
       ...props,
       lineJoin: "round",
       lineCap: "round",
-      lineWidth: 0.01,
+      lineWidth: 0.45,
+      // strokeStyle: "rgba(0,0,0,0.25)",
       optimize: {
         sort: false,
         removeDuplicates: false,

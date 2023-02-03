@@ -36,11 +36,11 @@ const drawWidth = 4.5;
 const ymargin = inch((11 - drawHeight) / 2);
 const xmargin = inch((8.5 - drawWidth) / 2);
 
-const rowCount = 200;
-const colCount = 50;
+const rowCount = 100;
+const colCount = 100;
 
 const intensity = 0.03;
-const frequency = 1.5;
+const frequency = 4;
 const z = 0;
 const offset = [0, 0]; // y min, y max
 
@@ -117,13 +117,13 @@ const sketch = (props) => {
       // let rand = noise1D(z) > 0;
       let rand = random.rangeFloor(0, 3);
 
-      var [u, v] = noisy(arr[0].pos, z + index * zShift, rand);
+      var [u, v] = noisy(arr[0].pos, z + index * zShift, 1);
       var x = lerp(xmargin, width - xmargin, u);
       var y = lerp(ymargin, height - ymargin, v);
       last = [x, y];
 
       arr.forEach((point, col) => {
-        var [u, v] = noisy(point.pos, z + index * zShift, rand);
+        var [u, v] = noisy(point.pos, z + index * zShift, 1);
         var [lastX, lastY] = last;
 
         var x = lerp(xmargin, width - xmargin, u);
